@@ -142,6 +142,22 @@ cdef class PointCloud_PointNormal:
         cdef cpp.PointNormal *p = idx.getptr_at2(self.thisptr(), row, col)
         return p.x, p.y, p.z, p.normal_x, p.normal_y, p.normal_z, p.curvature
 
+    def _from_pcd_file(self, const char *s):
+        cdef int ok = -1
+        # with nogil:
+        #     ok = pcl_io.loadPCDFile [cpp.PointNormal](string(s), deref(self.thisptr()))
+        # Cython 0.29? : Calling gil-requiring function not allowed without gil
+        ok = pcl_io.loadPCDFile [cpp.PointNormal](string(s), deref(self.thisptr()))
+        return ok
+
+    def _to_pcd_file(self, const char *f, bool binary=False):
+        cdef int ok = -1
+        cdef string s = string(f)
+        # with nogil:
+        #     ok = pcl_io.savePCDFile [cpp.PointNormal](s, deref(self.thisptr()), binary)
+        ok = pcl_io.savePCDFile [cpp.PointNormal](s, deref(self.thisptr()), binary)
+        return ok
+
     def __getitem__(self, cnp.npy_intp nmidx):
         cdef cpp.PointNormal *p = idx.getptr_at(self.thisptr(), nmidx)
         return p.x, p.y, p.z, p.normal_x, p.normal_y, p.normal_z, p.curvature

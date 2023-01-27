@@ -45,6 +45,26 @@ def load_XYZI(path, format=None):
     return p
 
 
+def load_XYZNormal(path, format=None):
+    """Load pointcloud from path.
+
+    Currently supports PCD and PLY files.
+
+    Format should be "pcd", "ply", or None to infer from the pathname.
+    """
+    format = _infer_format(path, format)
+    p = PointCloud_PointNormal()
+    try:
+        loader = getattr(p, "_from_%s_file" % format)
+    except AttributeError:
+        raise ValueError("unknown file format %s" % format)
+    if loader(_encode(path)):
+        raise IOError("error while loading pointcloud from %r (format=%r)"
+                      % (path, format))
+    return p
+
+
+
 def load_XYZRGB(path, format=None):
     """
     Load pointcloud from path.

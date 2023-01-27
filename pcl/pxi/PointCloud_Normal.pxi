@@ -143,6 +143,15 @@ cdef class PointCloud_Normal:
         cdef cpp.Normal *p = idx.getptr_at(self.thisptr(), nmidx)
         return p.normal_x, p.normal_y, p.normal_z, p.curvature
 
+
+    def _to_pcd_file(self, const char *f, bool binary=False):
+        cdef int ok = -1
+        cdef string s = string(f)
+        # with nogil:
+        #     ok = pcl_io.savePCDFile [cpp.Normal](s, deref(self.thisptr()), binary)
+        ok = pcl_io.savePCDFile [cpp.Normal](s, deref(self.thisptr()), binary)
+        return ok
+
     # def extract(self, pyindices, bool negative=False):
     #     """
     #     Given a list of indices of points in the pointcloud, return a 
